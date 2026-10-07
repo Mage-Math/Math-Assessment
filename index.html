@@ -443,7 +443,8 @@ sup .frac {
 
     <div style="margin-bottom: 20px; display: flex; gap: 10px;">
         <button class="btn-secondary" onclick="exportClassCSV()">📥 Export Detailed Results (CSV)</button>
-        <button onclick="clearClassData()" style="background:#c0392b;">Clear All Results</button>
+        <button onclick="loadTeacherDashboard()" style="background:#0f4c81;">🔄 Refresh Data</button>
+        <button onclick="clearClassData()" style="background:#c0392b;">Clear Local Results</button>
     </div>
 
     <table class="topic-table">
@@ -493,6 +494,7 @@ let score = 0;
 let masterSkills = new Set();
 let lackingSkills = new Set();
 let studentAnswersList = [];
+let currentLoadedRecords = [];
 
 let timerInterval = null;
 let timeRemaining = TIME_LIMIT_SECONDS;
@@ -523,7 +525,7 @@ function handleTabSwitch() {
     }
 }
 
-/* QUESTION BANK (EXACTLY 20 TOPICS EACH FOR LEVEL 1, LEVEL 2, AND LEVEL 3) */
+/* QUESTION BANK (20 TOPICS EACH FOR LEVEL 1, LEVEL 2, AND LEVEL 3) */
 const questions = [
     // --- LEVEL 1: FOUNDATION (20 TOPICS) ---
     { level: 1, skill: "Operations with Integers", question: "What is the value of -7 + 12 - 5?", options: ["0", "-10", "10", "14"], answer: 0 },
@@ -611,11 +613,34 @@ function exitTeacherPortal() {
 }
 
 function loadTeacherDashboard() {
-    let records = JSON.parse(localStorage.getItem("mage_diagnostic_results") || "[]");
+    let tbody = document.getElementById("teacherTableBody");
+    tbody.innerHTML = `<tr><td colspan="7">Loading submissions...</td></tr>`;
+
+    let localRecords = JSON.parse(localStorage.getItem("mage_diagnostic_results") || "[]");
+
+    // Fetch cloud submissions from Google Sheets backend
+    fetch(GOOGLE_SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                currentLoadedRecords = data;
+            } else {
+                currentLoadedRecords = localRecords;
+            }
+            renderTableData(currentLoadedRecords);
+        })
+        .catch(() => {
+            // Fallback to local storage if remote fetch fails
+            currentLoadedRecords = localRecords;
+            renderTableData(currentLoadedRecords);
+        });
+}
+
+function renderTableData(records) {
     let tbody = document.getElementById("teacherTableBody");
     tbody.innerHTML = "";
 
-    if (records.length === 0) {
+    if (!records || records.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7">No student submissions recorded yet.</td></tr>`;
         return;
     }
@@ -637,8 +662,7 @@ function loadTeacherDashboard() {
 }
 
 function viewStudentDetails(index) {
-    let records = JSON.parse(localStorage.getItem("mage_diagnostic_results") || "[]");
-    let student = records[index];
+    let student = currentLoadedRecords[index];
     if (!student) return;
 
     document.getElementById("modalStudentName").textContent = student.name;
@@ -680,8 +704,8 @@ function closeModal() {
 }
 
 function exportClassCSV() {
-    let records = JSON.parse(localStorage.getItem("mage_diagnostic_results") || "[]");
-    if (records.length === 0) {
+    let records = currentLoadedRecords;
+    if (!records || records.length === 0) {
         alert("No results available to export.");
         return;
     }
@@ -692,8 +716,8 @@ function exportClassCSV() {
             r.details.forEach((d, idx) => {
                 let status = d.isCorrect ? "Correct" : "Incorrect";
                 let cleanQ = removeLevelText(d.question).replace(/<[^>]*>/g, "");
-                let cleanSelected = d.selectedAnswer.replace(/<[^>]*>/g, "");
-                let cleanCorrect = d.correctAnswer.replace(/<[^>]*>/g, "");
+                let cleanSelected = (d.selectedAnswer || "").replace(/<[^>]*>/g, "");
+                let cleanCorrect = (d.correctAnswer || "").replace(/<[^>]*>/g, "");
                 
                 csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${r.date}",${idx + 1},"${d.skill.replace(/"/g, '""')}",${d.level || 1},"${cleanQ.replace(/"/g, '""')}","${cleanSelected.replace(/"/g, '""')}","${cleanCorrect.replace(/"/g, '""')}","${status}"\n`;
             });
@@ -710,7 +734,7 @@ function exportClassCSV() {
 }
 
 function clearClassData() {
-    if (confirm("Are you sure you want to delete all saved student results?")) {
+    if (confirm("Are you sure you want to clear local results cached on this browser?")) {
         localStorage.removeItem("mage_diagnostic_results");
         loadTeacherDashboard();
     }
@@ -760,13 +784,11 @@ function showNextAdaptiveQuestion() {
         return;
     }
 
-    // Filter unasked questions at current difficulty level
     let availableQuestions = questions.filter(q => 
         q.level === currentDifficultyLevel && 
         !studentAnswersList.some(ans => ans.question === removeLevelText(q.question))
     );
 
-    // Fallback if no unused questions left at current level
     if (availableQuestions.length === 0) {
         availableQuestions = questions.filter(q => 
             !studentAnswersList.some(ans => ans.question === removeLevelText(q.question))
@@ -822,14 +844,13 @@ function submitAnswer() {
         consecutiveCorrect++;
         masterSkills.add(currentQuestion.skill);
 
-        // FAST-TRACK: 2 consecutive correct answers jump straight to Level 3
         if (consecutiveCorrect >= 2 && currentDifficultyLevel < 3) {
             currentDifficultyLevel = 3;
         } else if (currentDifficultyLevel < 3) {
             currentDifficultyLevel++;
         }
     } else {
-        consecutiveCorrect = 0; // Reset streak on incorrect answer
+        consecutiveCorrect = 0;
         lackingSkills.add(currentQuestion.skill);
 
         if (currentDifficultyLevel > 1) {
