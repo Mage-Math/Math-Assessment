@@ -189,7 +189,7 @@ button:hover {
     border-color: var(--secondary-color);
 }
 
-/* PROPER FRACTION FORMATTING CSS */
+/* VERTICAL FRACTION FORMATTING CSS */
 .frac {
     display: inline-flex;
     flex-direction: column;
@@ -380,7 +380,8 @@ button:hover {
         <b>📌 Important Instructions:</b>
         <ul>
             <li>This adaptive assessment evaluates core and advanced mathematical skills.</li>
-            <li>Time Limit: <b>45 Minutes</b>.</li>
+            <li>Questions adaptively escalate up to Cambridge Stage 9 Higher Level based on your performance.</li>
+            <li>Total Questions: <b>20 Questions</b> | Time Limit: <b>45 Minutes</b>.</li>
             <li><b>Strict Window Policy:</b> Switching tabs or leaving the assessment window is <b>strictly prohibited</b>. Exceeding 3 tab switches will result in the <b>immediate and automatic cancellation</b> of your exam.</li>
         </ul>
     </div>
@@ -476,7 +477,7 @@ const TEACHER_PIN = "egam@2026";
 
 const TIME_LIMIT_SECONDS = 45 * 60;
 const MAX_TAB_SWITCHES = 3;
-const MAX_TEST_QUESTIONS = 15;
+const MAX_TEST_QUESTIONS = 20;
 
 let studentName = "";
 let currentQuestion = null;
@@ -518,9 +519,9 @@ function handleTabSwitch() {
     }
 }
 
-/* QUESTION BANK (15 TOPICS EACH FOR LEVEL 1, LEVEL 2, AND LEVEL 3) */
+/* QUESTION BANK (EXACTLY 20 TOPICS EACH FOR LEVEL 1, LEVEL 2, AND LEVEL 3) */
 const questions = [
-    // --- LEVEL 1: FOUNDATION (15 TOPICS) ---
+    // --- LEVEL 1: FOUNDATION (20 TOPICS) ---
     { level: 1, skill: "Operations with Integers", question: "What is the value of -7 + 12 - 5?", options: ["0", "-10", "10", "14"], answer: 0 },
     { level: 1, skill: "Integer Multiplication & Division", question: "Calculate (-4) × (-6) ÷ 2.", options: ["12", "-12", "24", "-24"], answer: 0 },
     { level: 1, skill: "Operations with Decimals", question: "What is 14.35 + 8.72 - 3.10?", options: ["19.97", "18.97", "19.87", "20.07"], answer: 0 },
@@ -536,8 +537,13 @@ const questions = [
     { level: 1, skill: "Mean and Range", question: "Find the mean of the data set: 4, 8, 6, 10, 12.", options: ["8", "6", "10", "7"], answer: 0 },
     { level: 1, skill: "Converting Fractions to Decimals", question: "Convert <span class='frac'><span class='num'>3</span><span class='den'>8</span></span> to a decimal.", options: ["0.375", "0.38", "0.35", "0.4"], answer: 0 },
     { level: 1, skill: "Basic Probability", question: "A standard 6-sided die is rolled. What is the probability of rolling a number greater than 4?", options: ["<span class='frac'><span class='num'>1</span><span class='den'>3</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>2</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>6</span></span>", "<span class='frac'><span class='num'>2</span><span class='den'>3</span></span>"], answer: 0 },
+    { level: 1, skill: "Prime Factorisation", question: "Express 36 as a product of prime factors.", options: ["2² × 3²", "2³ × 3", "2 × 3³", "4 × 9"], answer: 0 },
+    { level: 1, skill: "HCF and LCM", question: "Find the Highest Common Factor (HCF) of 24 and 36.", options: ["12", "6", "72", "4"], answer: 0 },
+    { level: 1, skill: "Angles in a Triangle", question: "Two angles in a triangle are 50° and 70°. Find the third angle.", options: ["60°", "50°", "70°", "80°"], answer: 0 },
+    { level: 1, skill: "Simple Coordinates", question: "What are the coordinates of the origin on a standard Cartesian plane?", options: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], answer: 0 },
+    { level: 1, skill: "Metric Conversions", question: "Convert 3.5 kilometers into meters.", options: ["3500 m", "350 m", "35000 m", "0.35 m"], answer: 0 },
 
-    // --- LEVEL 2: STANDARD (15 TOPICS) ---
+    // --- LEVEL 2: STANDARD (20 TOPICS) ---
     { level: 2, skill: "Solving Multi-Step Linear Equations", question: "Solve for x:\n4(x - 3) = 2x + 10", options: ["x = 11", "x = 7", "x = 5", "x = 13"], answer: 0 },
     { level: 2, skill: "Pythagoras Theorem", question: "A right triangle has a base of 9 cm and a vertical height of 12 cm. How long is the hypotenuse?", options: ["15 cm", "18 cm", "21 cm", "13 cm"], answer: 0 },
     { level: 2, skill: "Volume of Cylinders", question: "A cylinder has a radius of 3 cm and a height of 10 cm. What is its volume in terms of π?", options: ["90π cm³", "60π cm³", "30π cm³", "180π cm³"], answer: 0 },
@@ -553,8 +559,13 @@ const questions = [
     { level: 2, skill: "Simple Interest", question: "Calculate the simple interest on $500 invested at 4% per annum for 3 years.", options: ["$60", "$40", "$50", "$600"], answer: 0 },
     { level: 2, skill: "Simultaneous Linear Equations", question: "Solve simultaneously:\nx + y = 10\nx - y = 4", options: ["x = 7, y = 3", "x = 6, y = 4", "x = 8, y = 2", "x = 5, y = 5"], answer: 0 },
     { level: 2, skill: "Speed, Distance, Time", question: "A car travels 180 km in 2 hours and 30 minutes. What is its average speed?", options: ["72 km/h", "90 km/h", "75 km/h", "80 km/h"], answer: 0 },
+    { level: 2, skill: "Standard Form / Scientific Notation", question: "Express 0.00045 in standard scientific notation.", options: ["4.5 × 10⁻⁴", "4.5 × 10⁻³", "45 × 10⁻⁵", "4.5 × 10⁴"], answer: 0 },
+    { level: 2, skill: "Factorising Single Brackets", question: "Factorise completely: 12x²y - 18xy²", options: ["6xy(2x - 3y)", "6x(2xy - 3y²)", "3xy(4x - 6y)", "12xy(x - 1.5y)"], answer: 0 },
+    { level: 2, skill: "Surface Area of Prisms", question: "Find the total surface area of a cube with edge length 4 cm.", options: ["96 cm²", "64 cm²", "48 cm²", "32 cm²"], answer: 0 },
+    { level: 2, skill: "Bearings", question: "If point B is on a bearing of 070° from point A, what is the bearing of A from B?", options: ["250°", "110°", "290°", "200°"], answer: 0 },
+    { level: 2, skill: "Probability Trees (Independent)", question: "A fair coin is flipped twice. What is the probability of getting two heads?", options: ["<span class='frac'><span class='num'>1</span><span class='den'>4</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>2</span></span>", "<span class='frac'><span class='num'>3</span><span class='den'>4</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>8</span></span>"], answer: 0 },
 
-    // --- LEVEL 3: CAMBRIDGE SECONDARY STAGE 9 HIGHER / EXTENDED (15 TOPICS) ---
+    // --- LEVEL 3: CAMBRIDGE SECONDARY STAGE 9 HIGHER / EXTENDED (20 TOPICS) ---
     { level: 3, skill: "Expanding Binomials (a > 1)", question: "Expand and simplify completely: (3x - 2)(2x + 5)", options: ["6x² + 11x - 10", "6x² - 11x - 10", "6x² + 19x - 10", "6x² - 10"], answer: 0 },
     { level: 3, skill: "Algebraic Fractions", question: "Express as a single fraction in its simplest form: <span class='frac'><span class='num'>3</span><span class='den'>x</span></span> + <span class='frac'><span class='num'>2</span><span class='den'>x + 1</span></span>", options: ["<span class='frac'><span class='num'>5x + 3</span><span class='den'>x(x + 1)</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>2x + 1</span></span>", "<span class='frac'><span class='num'>5x + 1</span><span class='den'>x(x + 1)</span></span>", "<span class='frac'><span class='num'>6</span><span class='den'>x(x + 1)</span></span>"], answer: 0 },
     { level: 3, skill: "Rearranging Advanced Formulae", question: "Make x the subject of the formula: y = <span class='frac'><span class='num'>2x + 1</span><span class='den'>x - 3</span></span>", options: ["x = <span class='frac'><span class='num'>3y + 1</span><span class='den'>y - 2</span></span>", "x = <span class='frac'><span class='num'>3y - 1</span><span class='den'>y + 2</span></span>", "x = <span class='frac'><span class='num'>y + 1</span><span class='den'>2y - 3</span></span>", "x = <span class='frac'><span class='num'>3y + 1</span><span class='den'>2 - y</span></span>"], answer: 0 },
@@ -569,7 +580,12 @@ const questions = [
     { level: 3, skill: "Functions & Inverse Functions", question: "Given f(x) = 4x - 3, find the inverse function f⁻¹(x).", options: ["f⁻¹(x) = <span class='frac'><span class='num'>x + 3</span><span class='den'>4</span></span>", "f⁻¹(x) = <span class='frac'><span class='num'>x - 3</span><span class='den'>4</span></span>", "f⁻¹(x) = 4x + 3", "f⁻¹(x) = <span class='frac'><span class='num'>1</span><span class='den'>4x - 3</span></span>"], answer: 0 },
     { level: 3, skill: "Upper and Lower Bounds", question: "A square has a side length of 8 cm rounded to the nearest cm. What is the lower bound for its area?", options: ["56.25 cm²", "64 cm²", "72.25 cm²", "56 cm²"], answer: 0 },
     { level: 3, skill: "Surds Simplification", question: "Simplify √75 - √12.", options: ["3√3", "√63", "5√3", "2√3"], answer: 0 },
-    { level: 3, skill: "Quadratic Formula", question: "Solve x² - 4x + 2 = 0 using the quadratic formula. What are the exact solutions?", options: ["2 ± √2", "4 ± √2", "2 ± 2√2", "-2 ± √2"], answer: 0 }
+    { level: 3, skill: "Quadratic Formula", question: "Solve x² - 4x + 2 = 0 using the quadratic formula. What are the exact solutions?", options: ["2 ± √2", "4 ± √2", "2 ± 2√2", "-2 ± √2"], answer: 0 },
+    { level: 3, skill: "Completing the Square", question: "Express x² - 6x + 11 in the form (x - a)² + b.", options: ["(x - 3)² + 2", "(x - 3)² + 11", "(x - 6)² + 2", "(x - 3)² - 2"], answer: 0 },
+    { level: 3, skill: "Sine Rule (Non Right-Angled)", question: "In triangle ABC, angle A = 30°, side a = 8 cm, side b = 12 cm. Find sin(B).", options: ["0.75", "0.5", "0.6", "0.8"], answer: 0 },
+    { level: 3, skill: "Direct and Inverse Proportion", question: "y is inversely proportional to x². When x = 2, y = 9. Find y when x = 3.", options: ["4", "6", "1", "2"], answer: 0 },
+    { level: 3, skill: "Vector Geometry", question: "Vector **a** = <span class='frac'><span class='num'>3</span><span class='den'>-2</span></span> and vector **b** = <span class='frac'><span class='num'>-1</span><span class='den'>4</span></span>. Calculate 2**a** + 3**b**.", options: ["<span class='frac'><span class='num'>3</span><span class='den'>8</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>8</span></span>", "<span class='frac'><span class='num'>3</span><span class='den'>10</span></span>", "<span class='frac'><span class='num'>4</span><span class='den'>6</span></span>"], answer: 0 },
+    { level: 3, skill: "Compound Interest & Growth", question: "A population of 5000 increases by 6% per year compound. Calculate the population after 3 years.", options: ["5955", "5900", "5800", "6000"], answer: 0 }
 ];
 
 /* TEACHER PORTAL LOGIC */
