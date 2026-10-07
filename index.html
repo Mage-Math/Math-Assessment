@@ -169,7 +169,8 @@ button:hover {
 }
 
 .option {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 14px 18px;
     margin: 12px 0;
     border: 2px solid #e0e0e0;
@@ -179,9 +180,34 @@ button:hover {
     font-size: 16px;
 }
 
+.option input[type="radio"] {
+    margin-right: 12px;
+}
+
 .option:hover {
     background: #f0fdf4;
     border-color: var(--secondary-color);
+}
+
+/* PROPER FRACTION FORMATTING CSS */
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 4px;
+    font-size: 0.9em;
+}
+
+.frac .num {
+    border-bottom: 1.5px solid currentColor;
+    padding-bottom: 1px;
+    line-height: 1;
+}
+
+.frac .den {
+    padding-top: 1px;
+    line-height: 1;
 }
 
 .progress {
@@ -194,7 +220,7 @@ button:hover {
     font-weight: 600;
     margin: 20px 0;
     color: #111;
-    line-height: 1.5;
+    line-height: 1.6;
     white-space: pre-line;
 }
 
@@ -354,6 +380,7 @@ button:hover {
         <b>📌 Important Instructions:</b>
         <ul>
             <li>This adaptive assessment evaluates core and advanced mathematical skills.</li>
+            <li>Questions adaptively escalate to Cambridge Stage 9 Higher Level as you give correct answers.</li>
             <li>Time Limit: <b>45 Minutes</b>.</li>
             <li><b>Strict Window Policy:</b> Switching tabs or leaving the assessment window is <b>strictly prohibited</b>. Exceeding 3 tab switches will result in the <b>immediate and automatic cancellation</b> of your exam.</li>
         </ul>
@@ -492,40 +519,55 @@ function handleTabSwitch() {
     }
 }
 
-/* QUESTION BANK (INCLUDES CAMBRIDGE SECONDARY STAGE 9 HIGHER/EXTENDED MATHEMATICS) */
+/* QUESTION BANK (15 TOPICS EACH FOR LEVEL 1, LEVEL 2, AND LEVEL 3) */
 const questions = [
-    // --- LEVEL 1: FOUNDATION ---
+    // --- LEVEL 1: FOUNDATION (15 TOPICS) ---
     { level: 1, skill: "Operations with Integers", question: "What is the value of -7 + 12 - 5?", options: ["0", "-10", "10", "14"], answer: 0 },
-    { level: 1, skill: "Operations with Integers", question: "Calculate (-4) × (-6) ÷ 2.", options: ["12", "-12", "24", "-24"], answer: 0 },
+    { level: 1, skill: "Integer Multiplication & Division", question: "Calculate (-4) × (-6) ÷ 2.", options: ["12", "-12", "24", "-24"], answer: 0 },
     { level: 1, skill: "Operations with Decimals", question: "What is 14.35 + 8.72 - 3.10?", options: ["19.97", "18.97", "19.87", "20.07"], answer: 0 },
-    { level: 1, skill: "Operations with Fractions", question: "What is 3/4 + 2/5 in simplest form?", options: ["23/20", "5/9", "1/2", "11/20"], answer: 0 },
+    { level: 1, skill: "Addition of Fractions", question: "What is <span class='frac'><span class='num'>3</span><span class='den'>4</span></span> + <span class='frac'><span class='num'>2</span><span class='den'>5</span></span> in simplest form?", options: ["<span class='frac'><span class='num'>23</span><span class='den'>20</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>9</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>2</span></span>", "<span class='frac'><span class='num'>11</span><span class='den'>20</span></span>"], answer: 0 },
+    { level: 1, skill: "Subtraction of Fractions", question: "Calculate <span class='frac'><span class='num'>7</span><span class='den'>8</span></span> - <span class='frac'><span class='num'>1</span><span class='den'>3</span></span> in simplest form.", options: ["<span class='frac'><span class='num'>13</span><span class='den'>24</span></span>", "<span class='frac'><span class='num'>6</span><span class='den'>5</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>24</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>4</span></span>"], answer: 0 },
     { level: 1, skill: "Basic Linear Equations", question: "Solve for x: 3x - 7 = 14", options: ["x = 7", "x = 6", "x = 8", "x = 5"], answer: 0 },
-    { level: 1, skill: "Perimeter and Area", question: "What is the area of a rectangle with length 12 cm and width 5 cm?", options: ["60 cm²", "34 cm²", "17 cm²", "120 cm²"], answer: 0 },
+    { level: 1, skill: "Perimeter and Area of Rectangles", question: "What is the area of a rectangle with length 12 cm and width 5 cm?", options: ["60 cm²", "34 cm²", "17 cm²", "120 cm²"], answer: 0 },
     { level: 1, skill: "Basic Ratios", question: "Simplify the ratio 18 : 24 to its lowest terms.", options: ["3 : 4", "2 : 3", "4 : 5", "3 : 5"], answer: 0 },
     { level: 1, skill: "Basic Percentages", question: "What is 15% of $80?", options: ["$12", "$10", "$15", "$18"], answer: 0 },
+    { level: 1, skill: "Rounding and Estimation", question: "Round 48.765 to 2 decimal places.", options: ["48.77", "48.76", "48.80", "49.00"], answer: 0 },
+    { level: 1, skill: "Basic Substitution", question: "If a = 4 and b = 3, evaluate 2a + 5b.", options: ["23", "20", "22", "19"], answer: 0 },
+    { level: 1, skill: "Angles on a Straight Line", question: "Two angles on a straight line are x° and 65°. What is the value of x?", options: ["115°", "125°", "25°", "110°"], answer: 0 },
+    { level: 1, skill: "Mean and Range", question: "Find the mean of the data set: 4, 8, 6, 10, 12.", options: ["8", "6", "10", "7"], answer: 0 },
+    { level: 1, skill: "Converting Fractions to Decimals", question: "Convert <span class='frac'><span class='num'>3</span><span class='den'>8</span></span> to a decimal.", options: ["0.375", "0.38", "0.35", "0.4"], answer: 0 },
+    { level: 1, skill: "Basic Probability", question: "A standard 6-sided die is rolled. What is the probability of rolling a number greater than 4?", options: ["<span class='frac'><span class='num'>1</span><span class='den'>3</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>2</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>6</span></span>", "<span class='frac'><span class='num'>2</span><span class='den'>3</span></span>"], answer: 0 },
 
-    // --- LEVEL 2: STANDARD ---
-    { level: 2, skill: "Solving Multi-Step Linear Equations", question: "Can you solve this equation for x?\n4(x - 3) = 2x + 10", options: ["x = 11", "x = 7", "x = 5", "x = 13"], answer: 0 },
-    { level: 2, skill: "Pythagoras Theorem", question: "A base of a right triangle is 9 cm and the vertical height is 12 cm. How long is the hypotenuse?", options: ["15 cm", "18 cm", "21 cm", "13 cm"], answer: 0 },
-    { level: 2, skill: "Volume of Cylinders", question: "A cylindrical container has a radius of 3 cm and a height of 10 cm. What is its volume in terms of π?", options: ["90π cm³", "60π cm³", "30π cm³", "180π cm³"], answer: 0 },
-    { level: 2, skill: "Index Laws", question: "Using the laws of indices, simplify: (2x³)² × 3x⁴", options: ["12x¹⁰", "6x⁹", "12x⁹", "6x¹⁰"], answer: 0 },
+    // --- LEVEL 2: STANDARD (15 TOPICS) ---
+    { level: 2, skill: "Solving Multi-Step Linear Equations", question: "Solve for x:\n4(x - 3) = 2x + 10", options: ["x = 11", "x = 7", "x = 5", "x = 13"], answer: 0 },
+    { level: 2, skill: "Pythagoras Theorem", question: "A right triangle has a base of 9 cm and a vertical height of 12 cm. How long is the hypotenuse?", options: ["15 cm", "18 cm", "21 cm", "13 cm"], answer: 0 },
+    { level: 2, skill: "Volume of Cylinders", question: "A cylinder has a radius of 3 cm and a height of 10 cm. What is its volume in terms of π?", options: ["90π cm³", "60π cm³", "30π cm³", "180π cm³"], answer: 0 },
+    { level: 2, skill: "Index Laws", question: "Simplify using the laws of indices: (2x³)² × 3x⁴", options: ["12x¹⁰", "6x⁹", "12x⁹", "6x¹⁰"], answer: 0 },
     { level: 2, skill: "Linear Inequalities", question: "Solve the inequality: -3x + 7 < 22", options: ["x > -5", "x < -5", "x > 5", "x < 5"], answer: 0 },
-    { level: 2, skill: "Percentage Increase", question: "A store increases the price of a $150 jacket by 20%. What is the new price tag?", options: ["$180", "$170", "$190", "$160"], answer: 0 },
-    { level: 2, skill: "Arithmetic Sequences", question: "Look at this number pattern: 5, 9, 13, 17, ...\nWhat will the 15th term be?", options: ["61", "57", "65", "53"], answer: 0 },
+    { level: 2, skill: "Percentage Increase & Decrease", question: "A store increases the price of a $150 jacket by 20%. What is the new price?", options: ["$180", "$170", "$190", "$160"], answer: 0 },
+    { level: 2, skill: "Arithmetic Sequences", question: "Find the 15th term of the sequence: 5, 9, 13, 17, ...", options: ["61", "57", "65", "53"], answer: 0 },
+    { level: 2, skill: "Multiplication of Fractions", question: "Calculate <span class='frac'><span class='num'>4</span><span class='den'>9</span></span> × <span class='frac'><span class='num'>3</span><span class='den'>8</span></span> in simplest form.", options: ["<span class='frac'><span class='num'>1</span><span class='den'>6</span></span>", "<span class='frac'><span class='num'>12</span><span class='den'>72</span></span>", "<span class='frac'><span class='num'>1</span><span class='den'>3</span></span>", "<span class='frac'><span class='num'>2</span><span class='den'>9</span></span>"], answer: 0 },
+    { level: 2, skill: "Division of Fractions", question: "Evaluate <span class='frac'><span class='num'>5</span><span class='den'>6</span></span> ÷ <span class='frac'><span class='num'>2</span><span class='den'>3</span></span> in simplest form.", options: ["<span class='frac'><span class='num'>5</span><span class='den'>4</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>9</span></span>", "<span class='frac'><span class='num'>10</span><span class='den'>18</span></span>", "<span class='frac'><span class='num'>4</span><span class='den'>5</span></span>"], answer: 0 },
+    { level: 2, skill: "Gradient of a Line", question: "Find the gradient of the line passing through (2, 5) and (6, 13).", options: ["2", "4", "0.5", "3"], answer: 0 },
+    { level: 2, skill: "Area of Circles", question: "What is the area of a circle with a radius of 7 cm? (Use π ≈ <span class='frac'><span class='num'>22</span><span class='den'>7</span></span>)", options: ["154 cm²", "44 cm²", "308 cm²", "49 cm²"], answer: 0 },
+    { level: 2, skill: "Expanding Single Brackets", question: "Expand and simplify: 3x(2x - 5) + 4x", options: ["6x² - 11x", "6x² - 15x", "6x² - 11", "6x - 11x"], answer: 0 },
+    { level: 2, skill: "Simple Interest", question: "Calculate the simple interest on $500 invested at 4% per annum for 3 years.", options: ["$60", "$40", "$50", "$600"], answer: 0 },
+    { level: 2, skill: "Simultaneous Linear Equations", question: "Solve simultaneously:\nx + y = 10\nx - y = 4", options: ["x = 7, y = 3", "x = 6, y = 4", "x = 8, y = 2", "x = 5, y = 5"], answer: 0 },
+    { level: 2, skill: "Speed, Distance, Time", question: "A car travels 180 km in 2 hours and 30 minutes. What is its average speed?", options: ["72 km/h", "90 km/h", "75 km/h", "80 km/h"], answer: 0 },
 
-    // --- LEVEL 3: CAMBRIDGE SECONDARY STAGE 9 HIGHER / EXTENDED ---
+    // --- LEVEL 3: CAMBRIDGE SECONDARY STAGE 9 HIGHER / EXTENDED (15 TOPICS) ---
     { level: 3, skill: "Expanding Binomials (a > 1)", question: "Expand and simplify completely: (3x - 2)(2x + 5)", options: ["6x² + 11x - 10", "6x² - 11x - 10", "6x² + 19x - 10", "6x² - 10"], answer: 0 },
-    { level: 3, skill: "Algebraic Fractions", question: "Express as a single fraction in its simplest form: (3 / x) + (2 / (x + 1))", options: ["(5x + 3) / (x(x + 1))", "5 / (2x + 1)", "(5x + 1) / (x(x + 1))", "6 / (x(x + 1))"], answer: 0 },
-    { level: 3, skill: "Rearranging Advanced Formulae", question: "Make x the subject of the formula: y = (2x + 1) / (x - 3)", options: ["x = (3y + 1) / (y - 2)", "x = (3y - 1) / (y + 2)", "x = (y + 1) / (2y - 3)", "x = (3y + 1) / (2 - y)"], answer: 0 },
+    { level: 3, skill: "Algebraic Fractions", question: "Express as a single fraction in its simplest form: <span class='frac'><span class='num'>3</span><span class='den'>x</span></span> + <span class='frac'><span class='num'>2</span><span class='den'>x + 1</span></span>", options: ["<span class='frac'><span class='num'>5x + 3</span><span class='den'>x(x + 1)</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>2x + 1</span></span>", "<span class='frac'><span class='num'>5x + 1</span><span class='den'>x(x + 1)</span></span>", "<span class='frac'><span class='num'>6</span><span class='den'>x(x + 1)</span></span>"], answer: 0 },
+    { level: 3, skill: "Rearranging Advanced Formulae", question: "Make x the subject of the formula: y = <span class='frac'><span class='num'>2x + 1</span><span class='den'>x - 3</span></span>", options: ["x = <span class='frac'><span class='num'>3y + 1</span><span class='den'>y - 2</span></span>", "x = <span class='frac'><span class='num'>3y - 1</span><span class='den'>y + 2</span></span>", "x = <span class='frac'><span class='num'>y + 1</span><span class='den'>2y - 3</span></span>", "x = <span class='frac'><span class='num'>3y + 1</span><span class='den'>2 - y</span></span>"], answer: 0 },
     { level: 3, skill: "Simultaneous Equations (Non-Linear)", question: "Solve the simultaneous equations:\ny = x² - 4\ny = 3x", options: ["x = 4, y = 12 OR x = -1, y = -3", "x = 2, y = 6 OR x = -2, y = -6", "x = 3, y = 9 OR x = -1, y = -3", "x = 4, y = 12 OR x = 1, y = 3"], answer: 0 },
     { level: 3, skill: "Quadratic Factorisation (a > 1)", question: "Factorise completely: 2x² + 7x + 3", options: ["(2x + 1)(x + 3)", "(2x + 3)(x + 1)", "(2x + 6)(x + 0.5)", "(x + 3)(x + 2)"], answer: 0 },
-    { level: 3, skill: "Negative & Fractional Indices", question: "Evaluate: 27^(-2/3)", options: ["1/9", "9", "-1/9", "-18"], answer: 0 },
+    { level: 3, skill: "Negative & Fractional Indices", question: "Evaluate: 27<sup>-<span class='frac'><span class='num'>2</span><span class='den'>3</span></span></sup>", options: ["<span class='frac'><span class='num'>1</span><span class='den'>9</span></span>", "9", "-<span class='frac'><span class='num'>1</span><span class='den'>9</span></span>", "-18"], answer: 0 },
     { level: 3, skill: "3D Pythagoras", question: "A cuboid has dimensions 3 cm by 4 cm by 12 cm. Find the length of the space diagonal.", options: ["13 cm", "15 cm", "19 cm", "√161 cm"], answer: 0 },
     { level: 3, skill: "Trigonometry (Finding Angles)", question: "In a right-angled triangle, opposite side = 5 cm, adjacent side = 12 cm. Find angle θ to 1 d.p.", options: ["22.6°", "67.4°", "24.6°", "42.5°"], answer: 0 },
     { level: 3, skill: "Circle Theorems", question: "Angle subtended by an arc at the center of a circle is 110°. What is the angle subtended by the same arc at the circumference?", options: ["55°", "220°", "110°", "70°"], answer: 0 },
     { level: 3, skill: "Area Scale Factor", question: "Two similar shapes have a linear scale factor ratio of 2 : 5. If the area of the smaller shape is 20 cm², what is the area of the larger shape?", options: ["125 cm²", "50 cm²", "100 cm²", "250 cm²"], answer: 0 },
-    { level: 3, skill: "Conditional Probability", question: "A bag contains 5 red and 4 blue balls. Two balls are drawn without replacement. What is P(both red)?", options: ["5/18", "25/81", "20/72", "5/12"], answer: 0 },
-    { level: 3, skill: "Functions & Inverse Functions", question: "Given f(x) = 4x - 3, find the inverse function f⁻¹(x).", options: ["f⁻¹(x) = (x + 3) / 4", "f⁻¹(x) = (x - 3) / 4", "f⁻¹(x) = 4x + 3", "f⁻¹(x) = 1 / (4x - 3)"], answer: 0 },
+    { level: 3, skill: "Conditional Probability", question: "A bag contains 5 red and 4 blue balls. Two balls are drawn without replacement. What is P(both red)?", options: ["<span class='frac'><span class='num'>5</span><span class='den'>18</span></span>", "<span class='frac'><span class='num'>25</span><span class='den'>81</span></span>", "<span class='frac'><span class='num'>20</span><span class='den'>72</span></span>", "<span class='frac'><span class='num'>5</span><span class='den'>12</span></span>"], answer: 0 },
+    { level: 3, skill: "Functions & Inverse Functions", question: "Given f(x) = 4x - 3, find the inverse function f⁻¹(x).", options: ["f⁻¹(x) = <span class='frac'><span class='num'>x + 3</span><span class='den'>4</span></span>", "f⁻¹(x) = <span class='frac'><span class='num'>x - 3</span><span class='den'>4</span></span>", "f⁻¹(x) = 4x + 3", "f⁻¹(x) = <span class='frac'><span class='num'>1</span><span class='den'>4x - 3</span></span>"], answer: 0 },
     { level: 3, skill: "Upper and Lower Bounds", question: "A square has a side length of 8 cm rounded to the nearest cm. What is the lower bound for its area?", options: ["56.25 cm²", "64 cm²", "72.25 cm²", "56 cm²"], answer: 0 },
     { level: 3, skill: "Surds Simplification", question: "Simplify √75 - √12.", options: ["3√3", "√63", "5√3", "2√3"], answer: 0 },
     { level: 3, skill: "Quadratic Formula", question: "Solve x² - 4x + 2 = 0 using the quadratic formula. What are the exact solutions?", options: ["2 ± √2", "4 ± √2", "2 ± 2√2", "-2 ± √2"], answer: 0 }
@@ -597,7 +639,7 @@ function viewStudentDetails(index) {
                         <span class="${statusClass}">${statusText}</span>
                     </div>
                     <div style="font-size:14px; color:#444; margin-bottom:8px;">${cleanQuestion}</div>
-                    <div style="font-size:13px;"><b>Selected Answer:</b> ${item.selectedAnswer}</div>
+                    <div style="font-size:13px; margin-bottom: 4px;"><b>Selected Answer:</b> ${item.selectedAnswer}</div>
                     <div style="font-size:13px;"><b>Correct Answer:</b> ${item.correctAnswer}</div>
                 </div>
             `;
@@ -630,8 +672,11 @@ function exportClassCSV() {
         if (r.details && r.details.length > 0) {
             r.details.forEach((d, idx) => {
                 let status = d.isCorrect ? "Correct" : "Incorrect";
-                let cleanQ = removeLevelText(d.question);
-                csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${r.date}",${idx + 1},"${d.skill.replace(/"/g, '""')}",${d.level || 1},"${cleanQ.replace(/"/g, '""')}","${d.selectedAnswer.replace(/"/g, '""')}","${d.correctAnswer.replace(/"/g, '""')}","${status}"\n`;
+                let cleanQ = removeLevelText(d.question).replace(/<[^>]*>/g, "");
+                let cleanSelected = d.selectedAnswer.replace(/<[^>]*>/g, "");
+                let cleanCorrect = d.correctAnswer.replace(/<[^>]*>/g, "");
+                
+                csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${r.date}",${idx + 1},"${d.skill.replace(/"/g, '""')}",${d.level || 1},"${cleanQ.replace(/"/g, '""')}","${cleanSelected.replace(/"/g, '""')}","${cleanCorrect.replace(/"/g, '""')}","${status}"\n`;
             });
         } else {
             csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${r.date}",N/A,N/A,N/A,N/A,N/A,N/A,N/A\n`;
@@ -725,7 +770,7 @@ function showNextAdaptiveQuestion() {
     currentQuestion.shuffledOpts = opts;
 
     opts.forEach((opt, index) => {
-        html += `<label class="option"><input type="radio" name="answer" value="${index}"> ${opt.text}</label>`;
+        html += `<label class="option"><input type="radio" name="answer" value="${index}"> <span>${opt.text}</span></label>`;
     });
 
     document.getElementById("questionArea").innerHTML = html;
