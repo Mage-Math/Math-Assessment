@@ -339,6 +339,17 @@ sup .frac {
     font-size: 14px;
 }
 
+.extension-banner {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
 .instructions-box {
     background: #fffbe3;
     border: 1px solid #ffe58f;
@@ -383,8 +394,9 @@ sup .frac {
         <b>📌 Important Instructions:</b>
         <ul>
             <li>This adaptive assessment evaluates core and advanced mathematical skills.</li>
-            <li>Total Questions: <b>20 Questions</b> | Time Limit: <b>45 Minutes</b>.</li>
-            <li><b>Strict Window Policy:</b> Switching tabs or leaving the assessment window is <b>strictly prohibited</b>. Exceeding 3 tab switches will result in the <b>immediate and automatic cancellation</b> of your exam.</li>
+            <li>Core Assessment: <b>20 Questions</b> | Time Limit: <b>45 Minutes</b>.</li>
+            <li><b>Extension Mode:</b> Fast-working students will unlock additional advanced questions for the remainder of the allotted 45 minutes.</li>
+            <li><b>Strict Window Policy:</b> Switching tabs or leaving the assessment window is <b>strictly prohibited</b> (Max 3 warnings).</li>
         </ul>
     </div>
 
@@ -409,9 +421,16 @@ sup .frac {
         ⚠️ Warning: Switching tabs is strictly prohibited! Recorded Violations: <span id="switchCountDisplay">0</span> / 3
     </div>
 
+    <div id="extensionNotice" class="extension-banner hidden">
+        🌟 <b>Advanced Extension Mode:</b> Core 20 questions completed! Keep going to maximize your performance score.
+    </div>
+
     <div id="questionArea"></div>
 
-    <button onclick="submitAnswer()">Submit Answer</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <button onclick="submitAnswer()">Submit Answer</button>
+        <button id="earlySubmitBtn" class="btn-secondary hidden" onclick="finishTest()">Finish & Submit Test</button>
+    </div>
 </div>
 
 <!-- RESULT SCREEN -->
@@ -480,7 +499,6 @@ const TEACHER_PIN = "egam@2026";
 
 const TIME_LIMIT_SECONDS = 45 * 60;
 const MAX_TAB_SWITCHES = 3;
-const MAX_TEST_QUESTIONS = 20;
 
 let studentName = "";
 let currentQuestion = null;
@@ -703,7 +721,7 @@ function exportClassExcel() {
         return;
     }
 
-    let csv = "\uFEFFStudent Name,Time Taken,Score,Total,Percentage,Placement,Tab Switches,Integers & Decimals,Fractions & Percentages,Algebra & Equations,Geometry & Measures,Ratio & Proportion,Probability & Statistics,Advanced Stage 9,Date,Question Number,Skill,Level,Question Text,Student Answer,Correct Answer,Status\n";
+    let csv = "\uFEFFStudent Name,Time Taken,Score,Total Attempted,Percentage,Placement,Tab Switches,Integers & Decimals,Fractions & Percentages,Algebra & Equations,Geometry & Measures,Ratio & Proportion,Probability & Statistics,Advanced Stage 9,Date,Question Number,Skill,Level,Question Text,Student Answer,Correct Answer,Status\n";
     
     records.forEach(r => {
         let b = r.breakdown || {};
@@ -772,9 +790,10 @@ function startTest() {
 }
 
 function showNextAdaptiveQuestion() {
-    if (currentQuestionIndex >= MAX_TEST_QUESTIONS) {
-        finishTest();
-        return;
+    // Show extension banner and optional finish button if user completed 20 questions
+    if (currentQuestionIndex >= 20) {
+        document.getElementById("extensionNotice").classList.remove("hidden");
+        document.getElementById("earlySubmitBtn").classList.remove("hidden");
     }
 
     let availableQuestions = questions.filter(q => 
@@ -788,13 +807,14 @@ function showNextAdaptiveQuestion() {
         );
     }
 
+    // If all question bank questions are completed, end test
     if (availableQuestions.length === 0) {
         finishTest();
         return;
     }
 
     currentQuestion = availableQuestions[0];
-    document.getElementById("questionNumber").textContent = `${currentQuestionIndex + 1} of ${MAX_TEST_QUESTIONS}`;
+    document.getElementById("questionNumber").textContent = `${currentQuestionIndex + 1}`;
 
     let cleanText = removeLevelText(currentQuestion.question);
     let html = `<div class="question">${cleanText}</div>`;
@@ -894,7 +914,7 @@ function finishTest() {
     document.getElementById("testScreen").classList.add("hidden");
     document.getElementById("resultScreen").classList.remove("hidden");
 
-    let totalQuestions = studentAnswersList.length || MAX_TEST_QUESTIONS;
+    let totalQuestions = studentAnswersList.length || 1;
     let percentage = Math.round((score / totalQuestions) * 100);
     let targetGrade = "";
 
