@@ -448,6 +448,7 @@ sup .frac {
         <thead>
             <tr>
                 <th>Student Name</th>
+                <th>Time Taken</th>
                 <th>Score</th>
                 <th>%</th>
                 <th>Placement</th>
@@ -474,7 +475,6 @@ sup .frac {
 </div>
 
 <script>
-// REPLACE WITH YOUR NEW DEPLOYED WEB APP URL FROM THE NEW GOOGLE SHEET
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykWOGSUkHBcoi5wLR2AuZAREstvuufb18U_pinBB8txDQ1Z7HW3tbG0r-4AnNOYck3cg/exec"; 
 const TEACHER_PIN = "egam@2026";
 
@@ -494,6 +494,7 @@ let currentLoadedRecords = [];
 
 let timerInterval = null;
 let timeRemaining = TIME_LIMIT_SECONDS;
+let testStartTime = null;
 
 let tabSwitchCount = 0;
 let isTestActive = false;
@@ -605,7 +606,7 @@ function exitTeacherPortal() {
 
 function loadTeacherDashboard() {
     let tbody = document.getElementById("teacherTableBody");
-    tbody.innerHTML = `<tr><td colspan="7">Loading records from Cloud Database...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8">Loading records from Cloud Database...</td></tr>`;
 
     const script = document.createElement('script');
     const callbackName = 'googleSheetsCallback_' + Math.floor(Math.random() * 1000000);
@@ -621,7 +622,7 @@ function loadTeacherDashboard() {
     script.onerror = function() {
         delete window[callbackName];
         if (document.body.contains(script)) document.body.removeChild(script);
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red;">Error fetching records. Ensure Apps Script access is set to 'Anyone'.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red;">Error fetching records. Ensure Apps Script access is set to 'Anyone'.</td></tr>`;
     };
 
     document.body.appendChild(script);
@@ -632,7 +633,7 @@ function renderTableData(records) {
     tbody.innerHTML = "";
 
     if (!records || records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7">No student submissions recorded yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8">No student submissions recorded yet.</td></tr>`;
         return;
     }
 
@@ -641,6 +642,7 @@ function renderTableData(records) {
         tbody.innerHTML += `
             <tr>
                 <td><b>${r.name}</b></td>
+                <td>${r.timeTaken || 'N/A'}</td>
                 <td>${r.score} / ${r.total}</td>
                 <td>${r.percentage}%</td>
                 <td>${r.placement}</td>
@@ -657,7 +659,7 @@ function viewStudentDetails(index) {
     if (!student) return;
 
     document.getElementById("modalStudentName").textContent = student.name;
-    document.getElementById("modalMeta").textContent = `Score: ${student.score}/${student.total} (${student.percentage}%) | Placement: ${student.placement} | Tab Switches Detected: ${student.tabSwitches || 0} | Date: ${student.date}`;
+    document.getElementById("modalMeta").textContent = `Time Elapsed: ${student.timeTaken || 'N/A'} | Score: ${student.score}/${student.total} (${student.percentage}%) | Placement: ${student.placement} | Tab Switches: ${student.tabSwitches || 0} | Date: ${student.date}`;
 
     let html = "";
     if (student.details && student.details.length > 0) {
@@ -701,7 +703,7 @@ function exportClassExcel() {
         return;
     }
 
-    let csv = "\uFEFFStudent Name,Score,Total,Percentage,Placement,Tab Switches,Integers & Decimals,Fractions & Percentages,Algebra & Equations,Geometry & Measures,Ratio & Proportion,Probability & Statistics,Advanced Stage 9,Date,Question Number,Skill,Level,Question Text,Student Answer,Correct Answer,Status\n";
+    let csv = "\uFEFFStudent Name,Time Taken,Score,Total,Percentage,Placement,Tab Switches,Integers & Decimals,Fractions & Percentages,Algebra & Equations,Geometry & Measures,Ratio & Proportion,Probability & Statistics,Advanced Stage 9,Date,Question Number,Skill,Level,Question Text,Student Answer,Correct Answer,Status\n";
     
     records.forEach(r => {
         let b = r.breakdown || {};
@@ -712,10 +714,10 @@ function exportClassExcel() {
                 let cleanSelected = (d.selectedAnswer || "").replace(/<[^>]*>/g, "");
                 let cleanCorrect = (d.correctAnswer || "").replace(/<[^>]*>/g, "");
                 
-                csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${b.integersDecimals || '-'}","${b.fractionsPercentages || '-'}","${b.algebra || '-'}","${b.geometry || '-'}","${b.ratioProportion || '-'}","${b.probabilityStats || '-'}","${b.advancedStage9 || '-'}","${r.date}",${idx + 1},"${d.skill.replace(/"/g, '""')}",${d.level || 1},"${cleanQ.replace(/"/g, '""')}","${cleanSelected.replace(/"/g, '""')}","${cleanCorrect.replace(/"/g, '""')}","${status}"\n`;
+                csv += `"${r.name.replace(/"/g, '""')}","${r.timeTaken || 'N/A'}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${b.integersDecimals || '-'}","${b.fractionsPercentages || '-'}","${b.algebra || '-'}","${b.geometry || '-'}","${b.ratioProportion || '-'}","${b.probabilityStats || '-'}","${b.advancedStage9 || '-'}","${r.date}",${idx + 1},"${d.skill.replace(/"/g, '""')}",${d.level || 1},"${cleanQ.replace(/"/g, '""')}","${cleanSelected.replace(/"/g, '""')}","${cleanCorrect.replace(/"/g, '""')}","${status}"\n`;
             });
         } else {
-            csv += `"${r.name.replace(/"/g, '""')}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${b.integersDecimals || '-'}","${b.fractionsPercentages || '-'}","${b.algebra || '-'}","${b.geometry || '-'}","${b.ratioProportion || '-'}","${b.probabilityStats || '-'}","${b.advancedStage9 || '-'}","${r.date}",N/A,N/A,N/A,N/A,N/A,N/A,N/A\n`;
+            csv += `"${r.name.replace(/"/g, '""')}","${r.timeTaken || 'N/A'}",${r.score},${r.total},${r.percentage}%,"${r.placement}",${r.tabSwitches || 0},"${b.integersDecimals || '-'}","${b.fractionsPercentages || '-'}","${b.algebra || '-'}","${b.geometry || '-'}","${b.ratioProportion || '-'}","${b.probabilityStats || '-'}","${b.advancedStage9 || '-'}","${r.date}",N/A,N/A,N/A,N/A,N/A,N/A,N/A\n`;
         }
     });
 
@@ -739,6 +741,14 @@ function startTimer() {
     }, 1000);
 }
 
+function getFormattedTimeTaken() {
+    if (!testStartTime) return "N/A";
+    let elapsedSeconds = Math.floor((Date.now() - testStartTime) / 1000);
+    let mins = Math.floor(elapsedSeconds / 60);
+    let secs = elapsedSeconds % 60;
+    return `${mins}m ${secs}s`;
+}
+
 function startTest() {
     studentName = document.getElementById("studentName").value.trim();
     if (!studentName) {
@@ -752,6 +762,7 @@ function startTest() {
     score = 0;
     tabSwitchCount = 0;
     isTestActive = true;
+    testStartTime = Date.now();
     studentAnswersList = [];
 
     document.getElementById("startScreen").classList.add("hidden");
@@ -903,9 +914,11 @@ function sendToCloudDatabase(percentage, placement, total) {
     document.getElementById("savingMessage").textContent = "Submitting to central database...";
     
     const breakdown = calculateCategoryBreakdown();
+    const timeTaken = getFormattedTimeTaken();
 
     const data = {
         name: studentName,
+        timeTaken: timeTaken,
         score: score,
         total: total,
         percentage: percentage,
