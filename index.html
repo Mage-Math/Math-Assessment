@@ -790,30 +790,35 @@ function startTest() {
 }
 
 function showNextAdaptiveQuestion() {
-    // Show extension banner and optional finish button if user completed 20 questions
+    // Show extension banner and finish button if core 20 questions are completed
     if (currentQuestionIndex >= 20) {
         document.getElementById("extensionNotice").classList.remove("hidden");
         document.getElementById("earlySubmitBtn").classList.remove("hidden");
     }
 
+    // Filter available questions at current level
     let availableQuestions = questions.filter(q => 
         q.level === currentDifficultyLevel && 
         !studentAnswersList.some(ans => ans.question === removeLevelText(q.question))
     );
 
+    // Fallback: If no questions available at current level, pull from remaining unasked questions
     if (availableQuestions.length === 0) {
         availableQuestions = questions.filter(q => 
             !studentAnswersList.some(ans => ans.question === removeLevelText(q.question))
         );
     }
 
-    // If all question bank questions are completed, end test
+    // End test if question bank exhausted
     if (availableQuestions.length === 0) {
         finishTest();
         return;
     }
 
-    currentQuestion = availableQuestions[0];
+    // Pick a random question from available pool to randomize starting and subsequent questions
+    let randomIndex = Math.floor(Math.random() * availableQuestions.length);
+    currentQuestion = availableQuestions[randomIndex];
+    
     document.getElementById("questionNumber").textContent = `${currentQuestionIndex + 1}`;
 
     let cleanText = removeLevelText(currentQuestion.question);
